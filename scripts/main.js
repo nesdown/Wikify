@@ -62,7 +62,7 @@ function findRandom() {
   $(document).ready(function(){
     $.ajax({
         type: "GET",
-        url: 'http://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json&grnlimit=1&callback=?',
+        url: 'https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json&grnlimit=1&callback=?',
         contentType: "application/json; charset=utf-8",
         async: false,
         dataType: "json",
