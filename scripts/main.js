@@ -18,19 +18,17 @@ function getJSON(urlGot) {
             title = data[1];
             description = data[2];
             link = data[3];
-
-            showResult(title, description);
+            showResult(title, description, link);
         },
 
-        error: function (errorMessage) {
-        }
+        error: function (errorMessage) {}
     });
   });
 }
 
 function findArticle() {
   searchTitle = String(document.getElementById("field").value);
-  let updateTitle = searchTitle.replace(' ', '%20');
+  let updateTitle = searchTitle.replace(/ /g, '%20');
   let request = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' +
     updateTitle + '&limit=1&format=json&callback=?';
 
@@ -38,32 +36,56 @@ function findArticle() {
   let secondRef = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=bee&limit=1&format=json'
   console.log(`Your request is like: ${request}`);
 
-  getJSON(request);
+  getJSON(request, false);
 }
 
 function showResult(title, description, link) {
 
   //Here we remove all that was here
-  document.getElementById('container').removeChild(
-    document.getElementById('random')
+  $('#container').empty();
+
+  //And here we append all needed data
+  $('#container').append(
+    `
+    <h1><b>${title}</b></h1>
+    <br/><br/>
+    <h1>${description}</h1>
+    <br/>
+    <a href='${link}'>
+      <button id='wiki'>Wiki</button>
+    </a>
+    `
   );
+}
 
-  document.getElementById('container').removeChild(
-    document.getElementById('field')
-  );
+function findRandom() {
+  $(document).ready(function(){
+    $.ajax({
+        type: "GET",
+        url: 'http://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json&grnlimit=1&callback=?',
+        contentType: "application/json; charset=utf-8",
+        async: false,
+        dataType: "json",
+        success: function (data, textStatus, jqXHR) {
+            let title = String(
+              data.query.pages[Object.keys(data.query.pages)].title
+            );
 
-  document.getElementById('container').removeChild(
-    document.getElementById('search')
-  );
+            let description = String(
+              data.query.pages[Object.keys(data.query.pages)].extract
+            );
 
-  let title1 = document.createElement('h1');
-  let desc1 = document.createTextNode(title);
-  title1.appendChild(desc1);
-  document.getElementById('container').appendChild(title1);
+            let linkFin = 'https://en.wikipedia.org/wiki/' + String(title.replace(/ /g, '_'));
 
-  let title2 = document.createElement('h1');
-  let desc2 = document.createTextNode(description);
-  title2.appendChild(desc2);
-  document.getElementById('container').appendChild(title2);
+            console.log(`
+              title: ${title} \n
+              description: ${description} \n
+              link: ${linkFin}`);
 
+            showResult(title, description, linkFin);
+        },
+
+        error: function (errorMessage) {}
+    });
+  });
 }
